@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from "react";
-import { fetchDetail } from "./api";
+import { fetchDetail,fetchBalance } from "./api";
 
 import {
   Signer,
@@ -17,6 +17,7 @@ function App() {
   const [signerConnected, setSignerConnected] = useState(false);
   const [signerLocked, setSignerLocked] = useState(true);
   const [activeKey, setActiveKey] = useState("");
+  const [balance, setbalance] = useState("");
 
   const [currentNotification, setCurrentNotification] = useState({
     text: "",
@@ -176,6 +177,14 @@ function App() {
 
   }
 
+  const getbalance = async () => {
+    if (!activeKey) return
+    const { data } = await fetchBalance(activeKey);
+    setbalance(data)
+    
+
+   }
+
   useEffect(() => {
     // Your code here
     setTimeout(async () => {
@@ -292,7 +301,14 @@ function App() {
         { deployhashnewModuleBytesDeploy && <div>deploy hash { deployhashnewModuleBytesDeploy}</div>}
 
         </div>
+      </div>
+      <div>====<strong>get balance</strong>====
+        <div><input type="submit" value="getbalance" onClick={getbalance} />
+          {!activeKey && <div>please connect to signer</div>}
+          {balance && <div>balance is { balance} motes</div>}
+          <hr />
         </div>
+      </div>
     </div>
   );
 }
