@@ -16,16 +16,13 @@ const client = new CasperServiceByJsonRPC("http://3.136.227.9:7777/rpc");
 app.post("/", async (req, res) => {
   let { signedDeployJSON } = req.body;
 
-  let signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
-  // new
-
   let url = "http://3.136.227.9:7777/rpc"
   
   let payload = {
     id: 1,
     jsonrpc:"2.0",
     method: 'account_put_deploy',
-    params: DeployUtil.deployToJson(signedDeploy)
+    params: signedDeployJSON
   }
   
 
