@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const axios = require("axios");
 
 const bodyParser = require("body-parser");
 app.use(cors());
@@ -8,7 +9,7 @@ app.use(cors());
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
-const { CasperServiceByJsonRPC,DeployUtil,EventStream,EventName,CLValueParsers,CLMap,CLValueBuilder,CLPublicKey } = require("casper-js-sdk");
+const { CasperServiceByJsonRPC,DeployUtil,CLPublicKey } = require("casper-js-sdk");
 const client = new CasperServiceByJsonRPC("http://3.136.227.9:7777/rpc");
 
 
@@ -18,10 +19,21 @@ app.post("/", async (req, res) => {
   let signedDeploy = DeployUtil.deployFromJson(signedDeployJSON).unwrap();
   // new
 
-  let { deploy_hash} = await client.deploy(signedDeploy);  
-  console.log("deploy_hash is: ", deploy_hash)
- 
+  let url = "http://3.136.227.9:7777/rpc"
+  
+  let payload = {
+    id: 1,
+    jsonrpc:"2.0",
+    method: 'account_put_deploy',
+    params: DeployUtil.deployToJson(signedDeploy)
+  }
+  
 
+  let { data: { result: { deploy_hash}, } } = await axios.post(url, payload);
+
+
+  console.log("deploy_hash is: ", deploy_hash)
+  
     res.status(200).send(deploy_hash);
 });
 
